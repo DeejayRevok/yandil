@@ -1,2 +1,2 @@
-# Bus station
-Python bus pattern implementation
+# Yadil
+Yet Another Dependency Injection Library
