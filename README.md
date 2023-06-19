@@ -1,8 +1,8 @@
 # YADIL
-Yet Another Dependency Injection Library
+[![YADIL CI](https://github.com/DeejayRevok/yadil/actions/workflows/pythonapp.yml/badge.svg?branch=main)](https://github.com/DeejayRevok/yadil/actions/workflows/pythonapp.yml)
 
 ## What is YADIL?
-YADIL is a python dependency injection library with two main aims:
+YADIL(**Yet Another Dependency Injection Library**) is a python dependency injection library with two main aims:
 - **Decouple the application source code totally from the dependency injection schema**.
 - **Avoid the need of dependency injection definitions**.
 
