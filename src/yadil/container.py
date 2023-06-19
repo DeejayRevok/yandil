@@ -1,0 +1,212 @@
+from abc import ABC
+from collections import defaultdict
+from dataclasses import is_dataclass
+from inspect import Parameter, signature
+from typing import (
+    Any,
+    Dict,
+    Final,
+    Generic,
+    Iterable,
+    List,
+    Optional,
+    Protocol,
+    Set,
+    Type,
+    TypeVar,
+    Union,
+    get_args,
+    get_origin,
+    get_type_hints,
+)
+
+from yadil.argument import Argument
+from yadil.configuration.configuration_container import ConfigurationContainer, default_configuration_container
+from yadil.dependency import Dependency
+from yadil.errors.abstract_class_not_allowed_error import AbstractClassNotAllowedError
+from yadil.errors.configuration_value_type_mismatch_error import ConfigurationValueTypeMismatchError
+from yadil.errors.dependency_not_found_error import DependencyNotFoundError
+from yadil.errors.missing_configuration_value_error import MissingConfigurationValueError
+from yadil.errors.missing_type_hint_item_type_error import MissingTypeHintItemTypeError
+from yadil.errors.primary_dependency_already_defined_error import PrimaryDependencyAlreadyDefinedError
+from yadil.errors.primary_dependency_not_found_error import PrimaryDependencyNotFoundError
+from yadil.typing_tools import is_type_hint_iterable, str_to_builtin_type, type_hint_iterable_builder_factory
+
+DT = TypeVar("DT")
+
+
+class Container:
+    __EXCLUDED_BASES: Final[Set[str]] = {object}
+    __ABSTRACT_BASES: Final[Set[str]] = {Protocol, Generic, ABC}
+    __BUILTIN_TYPES: Final[Set[str]] = {int, float, str, bool, bytes, bytearray}
+
+    def __init__(self, configuration_container: ConfigurationContainer):
+        self.__dependency_map: Dict[Type, Dependency] = {}
+        self.__bases_map: Dict[Type, List[Type]] = defaultdict(list)
+        self.__configuration_container = configuration_container
+
+    def add(self, cls: Type, is_primary: Optional[bool] = None) -> None:
+        if self.__is_abstract_class(cls):
+            raise AbstractClassNotAllowedError(cls)
+
+        dependency = Dependency(cls, is_primary=is_primary)
+
+        self.__update_parents_map(cls, is_primary)
+        self.__dependency_map[cls] = dependency
+
+    def __setitem__(self, cls: Type[DT], value: DT) -> None:
+        if self.__is_abstract_class(cls):
+            cls = value.__class__
+            is_primary = True
+            dependency = Dependency(cls, value=value, is_resolved=True, is_primary=True)
+        else:
+            is_primary = None
+            dependency = Dependency(cls, value=value, is_resolved=True)
+
+        self.__update_parents_map(cls, is_primary)
+        self.__dependency_map[cls] = dependency
+
+    def __is_abstract_class(self, cls: Type) -> bool:
+        for base in cls.__bases__:
+            if base in self.__ABSTRACT_BASES:
+                return True
+        return False
+
+    def __update_parents_map(self, cls: Type, is_primary: Optional[bool]) -> None:
+        for base in cls.__bases__:
+            if base in self.__EXCLUDED_BASES:
+                continue
+
+            if (
+                is_primary is True
+                and base in self.__bases_map
+                and self.__get_primary_dependency_from_base_children(self.__bases_map[base])
+            ):
+                raise PrimaryDependencyAlreadyDefinedError(base)
+
+            self.__bases_map[base].append(cls)
+
+    def __getitem__(self, cls: Type[DT]) -> Optional[DT]:
+        dependency = self.__dependency_map.get(cls, None)
+        if dependency is None and cls in self.__bases_map:
+            dependency = self.__get_dependency_from_base(cls)
+
+        if dependency is not None:
+            self.__set_arguments(dependency)
+            return dependency.resolve()
+
+        if dependency is None and self.__is_optional(cls):
+            return self.__get_optional_dependency(cls)
+
+        raise DependencyNotFoundError(cls)
+
+    def __get_primary_dependency_from_base_children(self, base_children: List[Type]) -> Optional[Dependency]:
+        for base_child in base_children:
+            dependency = self.__dependency_map[base_child]
+            if dependency is not None and dependency.is_primary:
+                return dependency
+
+        return None
+
+    def __get_dependency_from_base(self, cls: Type) -> Dependency:
+        base_children = self.__bases_map[cls]
+        if len(base_children) == 1:
+            return self.__dependency_map[base_children[0]]
+
+        primary_dependency = self.__get_primary_dependency_from_base_children(base_children)
+        if primary_dependency is None:
+            raise PrimaryDependencyNotFoundError(cls)
+        return primary_dependency
+
+    def __is_optional(self, cls: Type) -> bool:
+        if get_origin(cls) is not Union:
+            return False
+
+        typing_args = get_args(cls)
+        if not typing_args:
+            raise MissingTypeHintItemTypeError()
+
+        return len(typing_args) == 2 and type(None) in typing_args
+
+    def __get_optional_dependency(self, cls: Type[DT]) -> Optional[DT]:
+        optional_inner_type = next(arg for arg in get_args(cls))
+        try:
+            return self[optional_inner_type]
+        except DependencyNotFoundError:
+            return None
+
+    def __set_arguments(self, dependency: Dependency) -> None:
+        if len(dependency.arguments) > 0:
+            return
+
+        for argument_name, argument_type in get_type_hints(dependency.cls.__init__).items():
+            if self.__should_skip_argument(dependency.cls, argument_name):
+                continue
+
+            if self.__is_configuration_argument(argument_type):
+                configuration_value = self.__configuration_container[argument_name]
+                if configuration_value is None:
+                    raise MissingConfigurationValueError(argument_name)
+
+                dependency.arguments.append(
+                    Argument(
+                        argument_name,
+                        self.__adapt_configuration_value_type(argument_type, configuration_value, argument_name),
+                    )
+                )
+                continue
+
+            if is_type_hint_iterable(argument_type):
+                argument_value = self.__get_iterable_dependency_value(argument_type)
+                dependency.arguments.append(Argument(argument_name, value=argument_value))
+                continue
+
+            try:
+                argument_value = self[argument_type]
+            except DependencyNotFoundError as err:
+                dependency_default_value = self.__get_keyword_dependency_default_value(dependency.cls, argument_name)
+                if dependency_default_value is None:
+                    raise err
+                dependency.arguments.append(Argument(argument_name, value=dependency_default_value))
+                continue
+
+            dependency.arguments.append(Argument(argument_name, value=argument_value))
+
+    def __is_configuration_argument(self, argument_type: str) -> bool:
+        return argument_type in self.__BUILTIN_TYPES
+
+    def __adapt_configuration_value_type(
+        self, argument_type: type, configuration_value: Any, configuration_value_name
+    ) -> Any:
+        actual_type = type(configuration_value)
+        if argument_type == actual_type:
+            return configuration_value
+        if actual_type != str:
+            raise ConfigurationValueTypeMismatchError(configuration_value_name, argument_type, actual_type)
+        return str_to_builtin_type(configuration_value, argument_type)
+
+    def __should_skip_argument(self, dependency_type: Type, argument_name: str) -> bool:
+        if is_dataclass(dependency_type):
+            return argument_name == "return"
+        return argument_name == "self"
+
+    def __get_iterable_dependency_value(self, iterable_type_hint: Type) -> Iterable:
+        type_hint_args = get_args(iterable_type_hint)
+        if not type_hint_args:
+            raise MissingTypeHintItemTypeError()
+
+        inner_iterable_type = get_args(iterable_type_hint)[0]
+        dependency_types = self.__bases_map[inner_iterable_type]
+        return type_hint_iterable_builder_factory(iterable_type_hint)(
+            self[dependency_type] for dependency_type in dependency_types
+        )
+
+    def __get_keyword_dependency_default_value(self, cls: Type, dependency_name: str) -> Optional[Any]:
+        init_signature = signature(cls.__init__)
+        dependency_param = init_signature.parameters.get(dependency_name)
+        if dependency_param is None or dependency_param.default is Parameter.empty:
+            return None
+        return dependency_param.default
+
+
+default_container = Container(configuration_container=default_configuration_container)
