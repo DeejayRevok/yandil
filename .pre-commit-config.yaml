@@ -1,0 +1,29 @@
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.2.0
+    hooks:
+    -   id: trailing-whitespace
+    -   id: end-of-file-fixer
+-   repo: local
+    hooks:
+      - id: isort
+        name: Sort imports
+        entry: docker-compose run yadil poetry run tox -e isort
+        language: system
+        types: [ python ]
+        pass_filenames: false
+        stages: [commit]
+      - id: black
+        name: Apply black formatting
+        entry: docker-compose run yadil poetry run tox -e black
+        language: system
+        types: [ python ]
+        pass_filenames: false
+        stages: [commit]
+      - id: cz-check-commit-msg
+        name: Commitizen check commit message
+        entry: docker-compose run yadil poetry run cz check
+        args: [--allow-abort, --commit-msg-file]
+        stages: [commit-msg]
+        language: python
+        language_version: python3
