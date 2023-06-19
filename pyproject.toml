@@ -1,0 +1,48 @@
+[tool.poetry]
+name = "yadil"
+version = "0.0.0"
+description = "Yet Another Dependency Injection Library"
+readme = "README.md"
+authors = ["DeejayRevok <seryi_one@hotmail.com>"]
+
+[tool.poetry.dependencies]
+python = "~=3.10.0"
+
+[tool.poetry.dev-dependencies]
+black = "22.1.0"
+coverage = "5.3"
+flake8 = "3.8.4"
+pytype = "2023.5.24"
+tox = "3.20.1"
+isort = "5.10.1"
+commitizen = "3.3.0"
+
+[tool.black]
+line-length = 120
+target-version = ['py310']
+exclude = '''
+/(
+  | \.git
+  | \.tox
+)/
+'''
+
+[tool.isort]
+profile = "black"
+py_version=310
+line_length = 120
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+version = "0.0.0"
+tag_format = "$version"
+version_files = [
+  "pyproject.toml:version"
+]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytype]
+pythonpath ='./src'
