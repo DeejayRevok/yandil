@@ -1,0 +1,27 @@
+name: YADIL CI
+
+on: [push]
+
+jobs:
+  yadil-CI:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup environment
+        run: docker-compose up -d
+      - name: Check imports
+        run: docker-compose run yadil poetry run tox -e isort -- -- --check-only
+      - name: Check formatting
+        run: docker-compose run yadil poetry run tox -e black -- -- --check
+      - name: Check style
+        run: docker-compose run yadil poetry run tox -e flake8
+      - name: Check typing
+        run: docker-compose run yadil poetry run tox -e pytype
+      - name: Run unit tests
+        run: docker-compose run yadil poetry run tox -e unit_tests
+      - name: Run integration tests
+        run: docker-compose run yadil poetry run tox -e integration_tests
+      - name: Check tests coverage
+        run: docker-compose run yadil poetry run tox -e check_tests_coverage
+      - name: Build the package
+        run: docker-compose run yadil poetry build
