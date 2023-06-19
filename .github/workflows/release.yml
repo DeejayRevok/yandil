@@ -1,0 +1,48 @@
+name: YADIL release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  yadil-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.RELEASE_TOKEN }}
+      - name: Setup environment
+        run: docker-compose up -d
+      - name: Install commitizen
+        run: pip install commitizen
+      - name: Bump version and create changelog
+        run: cz bump --yes --files-only --changelog --changelog-to-stdout >body.md
+      - name: Set version
+        id: version
+        run: echo "::set-output name=VERSION::$(docker-compose run yadil poetry version -s)"
+      - name: Check if version exists
+        uses: mukunku/tag-exists-action@v1.0.0
+        id: checkTag
+        with:
+          tag: ${{ steps.version.outputs.VERSION }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+      - name: Fail if tag exists
+        if: steps.checkTag.outputs.exists == 'true'
+        run: exit 1
+      - name: Push new version and changelog
+        run: |
+          git config --local user.name "Github Action"
+          git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
+          git add pyproject.toml CHANGELOG.md
+          git commit -m "${{ steps.version.outputs.VERSION }}: Github actions version and changelog update"
+          git push
+      - name: Publish the package
+        run: docker-compose run yadil poetry publish -u ${{ secrets.PYPI_USER }} -p ${{ secrets.PYPI_PASSWORD }} --build
+      - name: Create github release
+        uses: softprops/action-gh-release@v1
+        with:
+          body_path: "body.md"
+          tag_name: ${{ steps.version.outputs.VERSION }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
