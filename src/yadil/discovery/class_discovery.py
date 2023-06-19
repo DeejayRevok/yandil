@@ -6,7 +6,7 @@ from os.path import relpath, splitext
 from typing import Iterator, Set, Type
 
 
-@dataclass
+@dataclass(frozen=True)
 class ClassData:
     module_file_path: str
     class_name: str
@@ -19,7 +19,7 @@ class ClassData:
 
 
 def discover_classes_from_module(module_file_path: str) -> Iterator[ClassDef]:
-    with open(module_file_path, "r") as file:
+    with open(module_file_path, "r", encoding="utf-8") as file:
         module_ast = parse(file.read())
 
     for node in module_ast.body:

@@ -159,10 +159,7 @@ class TestContainer(TestCase):
         self.assertIsNotNone(class_with_iterable_dependencies.iterable_dependencies)
         self.assertIsInstance(class_with_iterable_dependencies.iterable_dependencies, set)
         for iterable_dependency in class_with_iterable_dependencies.iterable_dependencies:
-            self.assertTrue(
-                isinstance(iterable_dependency, FirstIterableDependencyClass)
-                or isinstance(iterable_dependency, SecondIterableDependencyClass)
-            )
+            self.assertIsInstance(iterable_dependency, (FirstIterableDependencyClass, SecondIterableDependencyClass))
 
     def test_get_class_with_primary_defined(self):
         self.container.add(ClassWithPrimaryDependencies)
