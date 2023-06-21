@@ -1,7 +1,7 @@
 from functools import wraps
 from typing import Optional, TypeVar
 
-from yadil.container import Container, default_container
+from yandil.container import Container, default_container
 
 DT = TypeVar("DT")
 

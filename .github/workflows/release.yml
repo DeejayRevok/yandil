@@ -1,10 +1,10 @@
-name: YADIL release
+name: YANDIL release
 
 on:
   workflow_dispatch:
 
 jobs:
-  yadil-release:
+  yandil-release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -19,7 +19,7 @@ jobs:
         run: cz bump --yes --files-only --changelog --changelog-to-stdout >body.md
       - name: Set version
         id: version
-        run: echo "::set-output name=VERSION::$(docker-compose run yadil poetry version -s)"
+        run: echo "::set-output name=VERSION::$(docker-compose run yandil poetry version -s)"
       - name: Check if version exists
         uses: mukunku/tag-exists-action@v1.0.0
         id: checkTag
@@ -38,7 +38,7 @@ jobs:
           git commit -m "${{ steps.version.outputs.VERSION }}: Github actions version and changelog update"
           git push
       - name: Publish the package
-        run: docker-compose run yadil poetry publish -u ${{ secrets.PYPI_USER }} -p ${{ secrets.PYPI_PASSWORD }} --build
+        run: docker-compose run yandil poetry publish -u ${{ secrets.PYPI_USER }} -p ${{ secrets.PYPI_PASSWORD }} --build
       - name: Create github release
         uses: softprops/action-gh-release@v1
         with:

@@ -1,8 +1,8 @@
 from os import environ
 from unittest import TestCase
 
-from yadil.configuration.configuration_container import ConfigurationContainer
-from yadil.configuration.environment import Environment
+from yandil.configuration.configuration_container import ConfigurationContainer
+from yandil.configuration.environment import Environment
 
 
 class TestConfigurationContainer(TestCase):
@@ -17,11 +17,11 @@ class TestConfigurationContainer(TestCase):
         self.assertEqual("test", configuration_value)
 
     def test_get_configuration_value_with_environment(self):
-        environ["YADIL_TEST"] = "test"
-        self.configuration_container["test"] = Environment("YADIL_TEST")
+        environ["YANDIL_TEST"] = "test"
+        self.configuration_container["test"] = Environment("YANDIL_TEST")
 
         configuration_value = self.configuration_container["test"]
 
         self.assertEqual("test", configuration_value)
 
-        del environ["YADIL_TEST"]
+        del environ["YANDIL_TEST"]

@@ -1,7 +1,7 @@
 from typing import List, Set, Tuple
 from unittest import TestCase
 
-from yadil.typing_tools import is_type_hint_iterable, str_to_builtin_type, type_hint_iterable_builder_factory
+from yandil.typing_tools import is_type_hint_iterable, str_to_builtin_type, type_hint_iterable_builder_factory
 
 
 class TestTypingTools(TestCase):

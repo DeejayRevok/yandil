@@ -1,4 +1,4 @@
-from yadil.declarative.decorators import dependency
+from yandil.declarative.decorators import dependency
 
 
 @dependency(is_primary=True)

@@ -2,9 +2,9 @@ from unittest import TestCase
 
 from integration.resources.simple_dependency_classes import SimpleDependencyClientClass, SimpleDependencyDependencyClass
 
-from yadil.configuration.configuration_container import ConfigurationContainer
-from yadil.container import Container
-from yadil.dependency_filler import DependencyFiller
+from yandil.configuration.configuration_container import ConfigurationContainer
+from yandil.container import Container
+from yandil.dependency_filler import DependencyFiller
 
 
 class TestDependencyFiller(TestCase):

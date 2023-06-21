@@ -20,17 +20,17 @@ from typing import (
     get_type_hints,
 )
 
-from yadil.argument import Argument
-from yadil.configuration.configuration_container import ConfigurationContainer, default_configuration_container
-from yadil.dependency import Dependency
-from yadil.errors.abstract_class_not_allowed_error import AbstractClassNotAllowedError
-from yadil.errors.configuration_value_type_mismatch_error import ConfigurationValueTypeMismatchError
-from yadil.errors.dependency_not_found_error import DependencyNotFoundError
-from yadil.errors.missing_configuration_value_error import MissingConfigurationValueError
-from yadil.errors.missing_type_hint_item_type_error import MissingTypeHintItemTypeError
-from yadil.errors.primary_dependency_already_defined_error import PrimaryDependencyAlreadyDefinedError
-from yadil.errors.primary_dependency_not_found_error import PrimaryDependencyNotFoundError
-from yadil.typing_tools import is_type_hint_iterable, str_to_builtin_type, type_hint_iterable_builder_factory
+from yandil.argument import Argument
+from yandil.configuration.configuration_container import ConfigurationContainer, default_configuration_container
+from yandil.dependency import Dependency
+from yandil.errors.abstract_class_not_allowed_error import AbstractClassNotAllowedError
+from yandil.errors.configuration_value_type_mismatch_error import ConfigurationValueTypeMismatchError
+from yandil.errors.dependency_not_found_error import DependencyNotFoundError
+from yandil.errors.missing_configuration_value_error import MissingConfigurationValueError
+from yandil.errors.missing_type_hint_item_type_error import MissingTypeHintItemTypeError
+from yandil.errors.primary_dependency_already_defined_error import PrimaryDependencyAlreadyDefinedError
+from yandil.errors.primary_dependency_not_found_error import PrimaryDependencyNotFoundError
+from yandil.typing_tools import is_type_hint_iterable, str_to_builtin_type, type_hint_iterable_builder_factory
 
 DT = TypeVar("DT")
 

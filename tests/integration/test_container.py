@@ -27,13 +27,13 @@ from integration.resources.primary_dependencies_classes import (
 )
 from integration.resources.simple_dependency_classes import SimpleDependencyClass, SimpleDependencyDependencyClass
 
-from yadil.configuration.configuration_container import ConfigurationContainer
-from yadil.configuration.environment import Environment
-from yadil.container import Container
-from yadil.errors.abstract_class_not_allowed_error import AbstractClassNotAllowedError
-from yadil.errors.dependency_not_found_error import DependencyNotFoundError
-from yadil.errors.missing_configuration_value_error import MissingConfigurationValueError
-from yadil.errors.primary_dependency_already_defined_error import PrimaryDependencyAlreadyDefinedError
+from yandil.configuration.configuration_container import ConfigurationContainer
+from yandil.configuration.environment import Environment
+from yandil.container import Container
+from yandil.errors.abstract_class_not_allowed_error import AbstractClassNotAllowedError
+from yandil.errors.dependency_not_found_error import DependencyNotFoundError
+from yandil.errors.missing_configuration_value_error import MissingConfigurationValueError
+from yandil.errors.primary_dependency_already_defined_error import PrimaryDependencyAlreadyDefinedError
 
 
 class TestContainer(TestCase):
@@ -192,11 +192,11 @@ class TestContainer(TestCase):
         self.assertEqual("value1", context.exception.configuration_value_name)
 
     def test_get_class_with_configuration_values_from_environment(self):
-        environ["YADIL_TEST_VALUE1"] = "value1"
-        environ["YADIL_TEST_VALUE2"] = "12"
+        environ["YANDIL_TEST_VALUE1"] = "value1"
+        environ["YANDIL_TEST_VALUE2"] = "12"
         self.container.add(ClassWithConfigurationValues)
-        self.configuration_container["value1"] = Environment("YADIL_TEST_VALUE1")
-        self.configuration_container["value2"] = Environment("YADIL_TEST_VALUE2")
+        self.configuration_container["value1"] = Environment("YANDIL_TEST_VALUE1")
+        self.configuration_container["value2"] = Environment("YANDIL_TEST_VALUE2")
 
         class_with_configuration_values = self.container[ClassWithConfigurationValues]
 
@@ -204,5 +204,5 @@ class TestContainer(TestCase):
         self.assertEqual(class_with_configuration_values.value1, "value1")
         self.assertEqual(class_with_configuration_values.value2, 12)
 
-        del environ["YADIL_TEST_VALUE1"]
-        del environ["YADIL_TEST_VALUE2"]
+        del environ["YANDIL_TEST_VALUE1"]
+        del environ["YANDIL_TEST_VALUE2"]
