@@ -1,7 +1,7 @@
 from os.path import dirname, join
 from unittest import TestCase
 
-from yadil.discovery.class_discovery import (
+from yandil.discovery.class_discovery import (
     class_defines_public_methods,
     class_has_any_decorator,
     discover_classes_from_module,

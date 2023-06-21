@@ -1,7 +1,7 @@
 from os.path import dirname, join
 from unittest import TestCase
 
-from yadil.discovery.module_discovery import discover_modules
+from yandil.discovery.module_discovery import discover_modules
 
 
 class TestModuleDiscovery(TestCase):

@@ -1,19 +1,19 @@
-# YADIL
-[![YADIL CI](https://github.com/DeejayRevok/yadil/actions/workflows/pythonapp.yml/badge.svg?branch=main)](https://github.com/DeejayRevok/yadil/actions/workflows/pythonapp.yml)
+# YANDIL
+[![YANDIL CI](https://github.com/DeejayRevok/yandil/actions/workflows/pythonapp.yml/badge.svg?branch=main)](https://github.com/DeejayRevok/yandil/actions/workflows/pythonapp.yml)
 
-## What is YADIL?
-YADIL(**Yet Another Dependency Injection Library**) is a python dependency injection library with two main aims:
+## What is YANDIL?
+YANDIL(**Yet ANother Dependency Injection Library**) is a python dependency injection library with two main aims:
 - **Decouple the application source code totally from the dependency injection schema**.
 - **Avoid the need of dependency injection definitions**.
 
 ## How does it work?
 In order to achieve the decoupling between the source code and the dependency injection,
-YADIL uses two main strategies:
+YANDIL uses two main strategies:
 - **Use the source code type hints to infer the dependency injection definitions**.
 - **Allow dependencies "client classes" to get the dependencies without using the dependency injection container itself**.
 
 On the other hand, for achieving the aim of avoiding the need of dependency injection definitions
-YADIL provides a **configurable way of scanning the source code searching for candidate components of the application**.
+YANDIL provides a **configurable way of scanning the source code searching for candidate components of the application**.
 
 Alternatively, in order to allow more control over the dependency injection it provides simple ways
 to define explicitly the dependency injection definitions.
@@ -42,10 +42,11 @@ Having the src folder as the sources root folder (with PYTHONPATH properly confi
 The following code placed inside the dependency_injection_configuration.py file
 will load all the classes defined inside the first_package folder as dependencies
 into the dependency injection container:
+
 ```python
-from yadil.configuration.configuration_container import ConfigurationContainer
-from yadil.container import Container
-from yadil.loaders.self_discover_dependency_loader import SelfDiscoverDependencyLoader
+from yandil.configuration.configuration_container import ConfigurationContainer
+from yandil.container import Container
+from yandil.loaders.self_discover_dependency_loader import SelfDiscoverDependencyLoader
 
 configuration_container = ConfigurationContainer()
 dependency_container = Container(
@@ -65,8 +66,9 @@ which can be achieved just setting the discovery_base_path same as the sources_r
 
 If you do not want to manage the dependency_container you can just leave it empty and the dependencies will be loaded
 into the library default_container which can be accessed through the following import:
+
 ```python
-from yadil.container import default_container
+from yandil.container import default_container
 ```
 
 In order to tune the dependency injection discovery process the loader has the following options:
@@ -87,8 +89,9 @@ Giving the following python project structure:
 ```
 Having the src folder as the sources root folder (with PYTHONPATH properly configured).
 If the first_package_first_module.py file contains the following code:
+
 ```python
-from yadil.declarative.decorators import dependency
+from yandil.declarative.decorators import dependency
 
 
 @dependency
@@ -98,8 +101,9 @@ class SimpleDependencyClass:
 The following code placed inside the dependency_injection_configuration.py file
 will load all the classes defined inside the first_package folder as dependencies
 into the dependency injection container:
+
 ```python
-from yadil.loaders.declarative_dependency_loader import DeclarativeDependencyLoader
+from yandil.loaders.declarative_dependency_loader import DeclarativeDependencyLoader
 
 DeclarativeDependencyLoader(
     discovery_base_path="../src/first_package",
@@ -121,10 +125,11 @@ class ClassWithConfigurationValues:
 ```
 
 The following code will load the configuration values to be injected into the class:
+
 ```python
-from yadil.configuration.configuration_container import ConfigurationContainer
-from yadil.configuration.environment import Environment
-from yadil.container import Container
+from yandil.configuration.configuration_container import ConfigurationContainer
+from yandil.configuration.environment import Environment
+from yandil.container import Container
 
 configuration_container = ConfigurationContainer()
 dependency_container = Container(
@@ -135,17 +140,18 @@ dependency_container.add(ClassWithConfigurationValues)
 
 configuration_container["first_config_var"] = "first_config_var_value"
 configuration_container["second_config_var"] = Environment(
-    "YADIL_EXAMPLE_SECOND_CONFIG_ENV_VAR",
+    "YANDIL_EXAMPLE_SECOND_CONFIG_ENV_VAR",
 )
 ```
 
 With the previous setup, when the ClassWithConfigurationValues dependency is retrieved,
 the first_config_var will be filled with first_config_var_value and the second_config_var
-will be filled with the value of the environment variable YADIL_EXAMPLE_SECOND_CONFIG_ENV_VAR.
+will be filled with the value of the environment variable YANDIL_EXAMPLE_SECOND_CONFIG_ENV_VAR.
 
 Again, if you do not want to manage the configuration container you can also use the default one with the following import:
+
 ```python
-from yadil.configuration.configuration_container import default_configuration_container
+from yandil.configuration.configuration_container import default_configuration_container
 ```
 
 ## How to load fixed instances for specific classes?
@@ -155,9 +161,10 @@ like for example when creating connection objects for communicating with externa
 
 For this scenario the following code will always use the same instance
 when the dependency for the class ClassWithConfigurationValues is requested:
+
 ```python
-from yadil.configuration.configuration_container import ConfigurationContainer
-from yadil.container import Container
+from yandil.configuration.configuration_container import ConfigurationContainer
+from yandil.container import Container
 
 configuration_container = ConfigurationContainer()
 dependency_container = Container(
@@ -195,10 +202,11 @@ class ClassWithDependencies:
 ```
 
 The following code allows the class to have the dependencies injected when it is instantiated:
+
 ```python
-from yadil.configuration.configuration_container import ConfigurationContainer
-from yadil.container import Container
-from yadil.dependency_filler import DependencyFiller
+from yandil.configuration.configuration_container import ConfigurationContainer
+from yandil.container import Container
+from yandil.dependency_filler import DependencyFiller
 
 configuration_container = ConfigurationContainer()
 dependency_container = Container(
@@ -211,12 +219,12 @@ dependency_container.add(SecondDependency)
 dependency_filler = DependencyFiller(dependency_container)
 dependency_filler.fill(ClassWithDependencies)
 
-#At this point the class_with_dependencies instance will have the dependencies injected
+# At this point the class_with_dependencies instance will have the dependencies injected
 class_with_dependencies = ClassWithDependencies()
 ```
 
 ## What about abstractions?
-YADIL supports the usage of abstractions in the code and it will automatically inject the
+YANDIL supports the usage of abstractions in the code and it will automatically inject the
 abstraction implementation class if the abstraction only has one implementation defined.
 
 If the abstraction has multiple implementations defined there could be two scenarios:

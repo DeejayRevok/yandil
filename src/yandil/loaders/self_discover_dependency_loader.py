@@ -1,14 +1,14 @@
 from typing import Iterable, Optional, Set
 
-from yadil.container import Container, default_container
-from yadil.discovery.class_discovery import (
+from yandil.container import Container, default_container
+from yandil.discovery.class_discovery import (
     ClassData,
     discover_classes_from_module,
     exclude_classes_without_public_methods,
     exclude_dataclasses,
     transform_class_nodes_to_class_data,
 )
-from yadil.discovery.module_discovery import discover_modules
+from yandil.discovery.module_discovery import discover_modules
 
 
 class SelfDiscoverDependencyLoader:

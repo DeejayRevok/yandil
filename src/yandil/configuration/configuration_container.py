@@ -1,6 +1,6 @@
 from typing import Any, Dict, Optional
 
-from yadil.configuration.environment import Environment
+from yandil.configuration.environment import Environment
 
 
 class ConfigurationContainer:

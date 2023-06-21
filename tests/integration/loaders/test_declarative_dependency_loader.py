@@ -1,9 +1,9 @@
 from os.path import dirname, join
 from unittest import TestCase
 
-from yadil.container import default_container
-from yadil.errors.dependency_not_found_error import DependencyNotFoundError
-from yadil.loaders.declarative_dependency_loader import DeclarativeDependencyLoader
+from yandil.container import default_container
+from yandil.errors.dependency_not_found_error import DependencyNotFoundError
+from yandil.loaders.declarative_dependency_loader import DeclarativeDependencyLoader
 
 
 class TestDeclarativeDependencyLoader(TestCase):

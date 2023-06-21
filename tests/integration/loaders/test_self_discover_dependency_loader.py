@@ -16,10 +16,10 @@ from integration.resources.dependency_discovery_tests_module.second_module.anoth
     AnotherClassWithPublicMethods,
 )
 
-from yadil.configuration.configuration_container import ConfigurationContainer
-from yadil.container import Container
-from yadil.errors.dependency_not_found_error import DependencyNotFoundError
-from yadil.loaders.self_discover_dependency_loader import SelfDiscoverDependencyLoader
+from yandil.configuration.configuration_container import ConfigurationContainer
+from yandil.container import Container
+from yandil.errors.dependency_not_found_error import DependencyNotFoundError
+from yandil.loaders.self_discover_dependency_loader import SelfDiscoverDependencyLoader
 
 
 class TestSelfDiscoverDependencyLoader(TestCase):
