@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "yadil"
+name = "yandil"
 version = "0.0.0"
-description = "Yet Another Dependency Injection Library"
+description = "Yet ANother Dependency Injection Library"
 readme = "README.md"
 authors = ["DeejayRevok <seryi_one@hotmail.com>"]
 
