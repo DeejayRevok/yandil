@@ -1,12 +1,12 @@
 from unittest import TestCase
 from unittest.mock import Mock, patch
 
-from yadil.container import Container
-from yadil.declarative.decorators import dependency
+from yandil.container import Container
+from yandil.declarative.decorators import dependency
 
 
 class TestDecorators(TestCase):
-    @patch("yadil.declarative.decorators.default_container")
+    @patch("yandil.declarative.decorators.default_container")
     def test_dependency_decorator_without_container(self, default_container_mock):
         @dependency
         class TestClass:

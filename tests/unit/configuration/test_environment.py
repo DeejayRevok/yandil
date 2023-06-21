@@ -1,11 +1,11 @@
 from unittest import TestCase
 from unittest.mock import patch
 
-from yadil.configuration.environment import Environment
+from yandil.configuration.environment import Environment
 
 
 class TestEnvironment(TestCase):
-    @patch.dict("yadil.configuration.environment.environ", {"TEST_ENVIRONMENT": "test_value"})
+    @patch.dict("yandil.configuration.environment.environ", {"TEST_ENVIRONMENT": "test_value"})
     def test_resolve(self):
         environment = Environment(variable_name="TEST_ENVIRONMENT")
 

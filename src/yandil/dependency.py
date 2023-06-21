@@ -2,7 +2,7 @@
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Type, TypeVar
 
-from yadil.argument import Argument
+from yandil.argument import Argument
 
 DT = TypeVar("DT")
 

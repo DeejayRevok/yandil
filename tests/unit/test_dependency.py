@@ -1,8 +1,8 @@
 from unittest import TestCase
 from unittest.mock import Mock
 
-from yadil.argument import Argument
-from yadil.dependency import Dependency
+from yandil.argument import Argument
+from yandil.dependency import Dependency
 
 
 class TestDependency(TestCase):

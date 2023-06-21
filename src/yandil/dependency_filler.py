@@ -1,6 +1,6 @@
 from typing import Any, Dict, Optional, Type, get_type_hints
 
-from yadil.container import Container, default_container
+from yandil.container import Container, default_container
 
 
 class DependencyFiller:
