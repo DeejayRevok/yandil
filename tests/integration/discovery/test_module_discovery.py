@@ -19,7 +19,7 @@ class TestModuleDiscovery(TestCase):
             "dependency_class",
             "class_without_public_methods",
             "declarative_dependency_class",
-            "abstract_class",
+            "abstract_classes",
         ]
         self.assertCountEqual(expected_module_names, discovered_module_names)
 
@@ -36,6 +36,6 @@ class TestModuleDiscovery(TestCase):
             "dependency_class",
             "class_without_public_methods",
             "declarative_dependency_class",
-            "abstract_class",
+            "abstract_classes",
         ]
         self.assertCountEqual(expected_module_names, discovered_module_names)

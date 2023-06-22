@@ -1,4 +1,4 @@
-from ast import Call, ClassDef, FunctionDef, Name, parse
+from ast import Call, ClassDef, FunctionDef, Name, Subscript, parse
 from dataclasses import dataclass
 from importlib import import_module
 from os import path
@@ -28,9 +28,14 @@ def discover_classes_from_module(module_file_path: str) -> Iterable[ClassDef]:
 
 
 def exclude_abstract_classes(class_nodes: Iterable[ClassDef]) -> Iterable[ClassDef]:
+    abstract_bases = {"Protocol", "Generic", "ABC"}
+
     def __is_abstract_class_node(node: ClassDef) -> bool:
         for base in node.bases:
-            if isinstance(base, Name) and base.id in {"Protocol", "Generic", "ABC"}:
+            if isinstance(base, Name) and base.id in abstract_bases:
+                return True
+
+            if isinstance(base, Subscript) and isinstance(base.value, Name) and base.value.id in abstract_bases:
                 return True
         return False
 
