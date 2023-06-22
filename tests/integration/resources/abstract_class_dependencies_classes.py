@@ -1,16 +1,20 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 
 
 class AbstractBaseClass(ABC):
-    pass
+    @abstractmethod
+    def method(self):
+        pass
 
 
 class AbstractBaseClassFirstChildren(AbstractBaseClass):
-    pass
+    def method(self):
+        pass
 
 
 class AbstractBaseClassSecondChildren(AbstractBaseClass):
-    pass
+    def method(self):
+        pass
 
 
 class ClassWithAbstractClassDependencies:

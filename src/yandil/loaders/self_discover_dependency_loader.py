@@ -4,6 +4,7 @@ from yandil.container import Container, default_container
 from yandil.discovery.class_discovery import (
     ClassData,
     discover_classes_from_module,
+    exclude_abstract_classes,
     exclude_classes_without_public_methods,
     exclude_dataclasses,
     transform_class_nodes_to_class_data,
@@ -47,7 +48,7 @@ class SelfDiscoverDependencyLoader:
         should_exclude_classes_without_public_methods: bool,
         should_exclude_dataclasses: bool,
     ) -> Iterable[ClassData]:
-        iterable = discover_classes_from_module(module_file_path)
+        iterable = exclude_abstract_classes(discover_classes_from_module(module_file_path))
         if should_exclude_classes_without_public_methods:
             iterable = exclude_classes_without_public_methods(iterable)
         if should_exclude_dataclasses:

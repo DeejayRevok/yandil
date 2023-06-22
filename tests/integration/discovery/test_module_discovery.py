@@ -10,7 +10,7 @@ class TestModuleDiscovery(TestCase):
     def test_discover_modules_from_path(self):
         discovered_modules = list(discover_modules(self.__DISCOVERY_BASE_PATH))
 
-        self.assertEqual(6, len(discovered_modules))
+        self.assertEqual(7, len(discovered_modules))
         discovered_module_names = [module.module_name for module in discovered_modules]
         expected_module_names = [
             "class_with_public_methods",
@@ -19,6 +19,7 @@ class TestModuleDiscovery(TestCase):
             "dependency_class",
             "class_without_public_methods",
             "declarative_dependency_class",
+            "abstract_class",
         ]
         self.assertCountEqual(expected_module_names, discovered_module_names)
 
@@ -27,7 +28,7 @@ class TestModuleDiscovery(TestCase):
 
         discovered_modules = list(discover_modules(self.__DISCOVERY_BASE_PATH, excluded_modules))
 
-        self.assertEqual(5, len(discovered_modules))
+        self.assertEqual(6, len(discovered_modules))
         discovered_module_names = [module.module_name for module in discovered_modules]
         expected_module_names = [
             "another_class_with_public_methods",
@@ -35,5 +36,6 @@ class TestModuleDiscovery(TestCase):
             "dependency_class",
             "class_without_public_methods",
             "declarative_dependency_class",
+            "abstract_class",
         ]
         self.assertCountEqual(expected_module_names, discovered_module_names)

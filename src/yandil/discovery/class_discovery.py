@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from importlib import import_module
 from os import path
 from os.path import relpath, splitext
-from typing import Iterator, Set, Type
+from typing import Iterable, Set, Type
 
 
 @dataclass(frozen=True)
@@ -18,7 +18,7 @@ class ClassData:
         return getattr(module, self.class_name)
 
 
-def discover_classes_from_module(module_file_path: str) -> Iterator[ClassDef]:
+def discover_classes_from_module(module_file_path: str) -> Iterable[ClassDef]:
     with open(module_file_path, "r", encoding="utf-8") as file:
         module_ast = parse(file.read())
 
@@ -27,7 +27,19 @@ def discover_classes_from_module(module_file_path: str) -> Iterator[ClassDef]:
             yield node
 
 
-def transform_class_nodes_to_class_data(class_nodes: Iterator[ClassDef], module_file_path: str) -> Iterator[ClassData]:
+def exclude_abstract_classes(class_nodes: Iterable[ClassDef]) -> Iterable[ClassDef]:
+    def __is_abstract_class_node(node: ClassDef) -> bool:
+        for base in node.bases:
+            if isinstance(base, Name) and base.id in {"Protocol", "Generic", "ABC"}:
+                return True
+        return False
+
+    for class_node in class_nodes:
+        if not __is_abstract_class_node(class_node):
+            yield class_node
+
+
+def transform_class_nodes_to_class_data(class_nodes: Iterable[ClassDef], module_file_path: str) -> Iterable[ClassData]:
     for class_node in class_nodes:
         yield ClassData(
             module_file_path=module_file_path,
@@ -35,7 +47,7 @@ def transform_class_nodes_to_class_data(class_nodes: Iterator[ClassDef], module_
         )
 
 
-def exclude_classes_without_public_methods(class_nodes: Iterator[ClassDef]) -> Iterator[ClassDef]:
+def exclude_classes_without_public_methods(class_nodes: Iterable[ClassDef]) -> Iterable[ClassDef]:
     for class_node in class_nodes:
         if class_defines_public_methods(class_node):
             yield class_node
@@ -49,7 +61,7 @@ def class_defines_public_methods(class_node: ClassDef) -> bool:
     return False
 
 
-def exclude_dataclasses(class_nodes: Iterator[ClassDef]) -> Iterator[ClassDef]:
+def exclude_dataclasses(class_nodes: Iterable[ClassDef]) -> Iterable[ClassDef]:
     for class_node in class_nodes:
         if class_has_any_decorator(class_node, {"dataclass"}):
             continue
@@ -70,8 +82,8 @@ def class_has_any_decorator(class_node: ClassDef, decorator_names: Set[str]) -> 
 
 
 def exclude_classes_without_decorators(
-    class_nodes: Iterator[ClassDef], decorator_names: Set[str]
-) -> Iterator[ClassDef]:
+    class_nodes: Iterable[ClassDef], decorator_names: Set[str]
+) -> Iterable[ClassDef]:
     for class_node in class_nodes:
         if class_has_any_decorator(class_node, decorator_names):
             yield class_node
