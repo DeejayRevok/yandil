@@ -5,6 +5,7 @@ from yandil.discovery.class_discovery import (
     class_defines_public_methods,
     class_has_any_decorator,
     discover_classes_from_module,
+    exclude_abstract_classes,
     exclude_classes_without_decorators,
     exclude_classes_without_public_methods,
     exclude_dataclasses,
@@ -106,3 +107,11 @@ class TestClassDiscovery(TestCase):
         class_excluding_ones_without_decorators = list(exclude_classes_without_decorators(discovered_classes, {"test"}))
 
         self.assertEqual(0, len(class_excluding_ones_without_decorators))
+
+    def test_exclude_abstract_classes(self):
+        module_file_path = join(self.__DISCOVERY_BASE_PATH, "abstract_class.py")
+        discovered_classes = discover_classes_from_module(module_file_path)
+
+        classes_excluding_abstract_classes = list(exclude_abstract_classes(discovered_classes))
+
+        self.assertEqual(0, len(classes_excluding_abstract_classes))
