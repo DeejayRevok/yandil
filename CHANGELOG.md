@@ -1,3 +1,9 @@
+## 0.1.2 (2023-06-22)
+
+### Fix
+
+- check class subscriptions for checking abstract classes on discovery
+
 ## 0.1.1 (2023-06-22)
 
 ### Fix
