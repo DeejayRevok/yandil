@@ -51,7 +51,7 @@ class Container:
 
         dependency = Dependency(cls, is_primary=is_primary)
 
-        self.__update_parents_map(cls, is_primary)
+        self.__update_bases_map(cls, is_primary)
         self.__dependency_map[cls] = dependency
 
     def __setitem__(self, cls: Type[DT], value: DT) -> None:
@@ -63,7 +63,7 @@ class Container:
             is_primary = None
             dependency = Dependency(cls, value=value, is_resolved=True)
 
-        self.__update_parents_map(cls, is_primary)
+        self.__update_bases_map(cls, is_primary)
         self.__dependency_map[cls] = dependency
 
     def __is_abstract_class(self, cls: Type) -> bool:
@@ -72,19 +72,31 @@ class Container:
                 return True
         return False
 
-    def __update_parents_map(self, cls: Type, is_primary: Optional[bool]) -> None:
-        for base in cls.__bases__:
-            if base in self.__EXCLUDED_BASES:
+    def __update_bases_map(
+        self, cls: Type, children_is_primary: Optional[bool], reference_class: Optional[Type] = None
+    ) -> None:
+        if reference_class is None:
+            reference_class = cls
+
+        if hasattr(reference_class, "__orig_bases__"):
+            for base in reference_class.__orig_bases__:
+                self.__add_children_to_base(cls, base, children_is_primary)
+
+        for base in reference_class.__bases__:
+            if base in self.__EXCLUDED_BASES or base in self.__ABSTRACT_BASES:
                 continue
+            self.__add_children_to_base(cls, base, children_is_primary)
+            self.__update_bases_map(cls, children_is_primary, reference_class=base)
 
-            if (
-                is_primary is True
-                and base in self.__bases_map
-                and self.__get_primary_dependency_from_base_children(self.__bases_map[base])
-            ):
-                raise PrimaryDependencyAlreadyDefinedError(base)
+    def __add_children_to_base(self, cls: Type, base: Type, children_is_primary: Optional[bool]) -> None:
+        if (
+            children_is_primary is True
+            and base in self.__bases_map
+            and self.__get_primary_dependency_from_base_children(self.__bases_map[base])
+        ):
+            raise PrimaryDependencyAlreadyDefinedError(base)
 
-            self.__bases_map[base].append(cls)
+        self.__bases_map[base].append(cls)
 
     def __getitem__(self, cls: Type[DT]) -> Optional[DT]:
         dependency = self.__dependency_map.get(cls, None)
