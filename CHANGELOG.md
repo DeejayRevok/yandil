@@ -1,3 +1,9 @@
+## 0.1.3 (2023-06-23)
+
+### Fix
+
+- **Container**: add also the definitions to bases map and update the bases map recursively
+
 ## 0.1.2 (2023-06-22)
 
 ### Fix
