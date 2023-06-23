@@ -8,6 +8,12 @@ from integration.resources.abstract_class_dependencies_classes import (
     ClassWithAbstractClassDependencies,
 )
 from integration.resources.class_with_configuration_values import ClassWithConfigurationValues
+from integration.resources.classes_multilevel_inheritance import (
+    ClassWithBaseAbstractClassDependency,
+    ClassWithBaseClassDependency,
+    DependencyClass,
+)
+from integration.resources.generic_classes import ClassWithGenericDependency, GenericSubClassInt, GenericSubClassStr
 from integration.resources.iterable_dependencies_classes import (
     ClassWithIterableDependencies,
     FirstIterableDependencyClass,
@@ -206,3 +212,26 @@ class TestContainer(TestCase):
 
         del environ["YANDIL_TEST_VALUE1"]
         del environ["YANDIL_TEST_VALUE2"]
+
+    def test_get_class_depending_generic(self):
+        self.container.add(ClassWithGenericDependency)
+        self.container.add(GenericSubClassStr)
+        self.container.add(GenericSubClassInt)
+
+        class_depending_generic = self.container[ClassWithGenericDependency]
+
+        self.assertIsInstance(class_depending_generic, ClassWithGenericDependency)
+        self.assertIsInstance(class_depending_generic.dependency, GenericSubClassStr)
+
+    def test_get_class_depending_first_base_on_multilevel_inheritance(self):
+        self.container.add(ClassWithBaseClassDependency)
+        self.container.add(ClassWithBaseAbstractClassDependency)
+        self.container.add(DependencyClass)
+
+        class_depending_base_class = self.container[ClassWithBaseClassDependency]
+        class_depending_base_abstract_class = self.container[ClassWithBaseAbstractClassDependency]
+
+        self.assertIsInstance(class_depending_base_class, ClassWithBaseClassDependency)
+        self.assertIsInstance(class_depending_base_class.dependency, DependencyClass)
+        self.assertIsInstance(class_depending_base_abstract_class, ClassWithBaseAbstractClassDependency)
+        self.assertIsInstance(class_depending_base_abstract_class.dependency, DependencyClass)
