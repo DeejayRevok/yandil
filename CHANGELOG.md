@@ -1,3 +1,9 @@
+## 0.1.4 (2023-06-24)
+
+### Fix
+
+- **Container**: propagate generic alias arguments to parent classes
+
 ## 0.1.3 (2023-06-23)
 
 ### Fix
