@@ -6,17 +6,22 @@ T = TypeVar("T")
 
 class GenericBaseClass(Generic[T]):
     @abstractmethod
-    def abstract_method(self) -> T:
+    def abstract_method(self, x: T) -> T:
         pass
 
 
-class GenericSubClassStr(GenericBaseClass[str]):
-    def abstract_method(self) -> str:
+class GenericSubClass(GenericBaseClass[T]):
+    def abstract_method(self, x: T) -> T:
+        return x
+
+
+class GenericSubClassStr(GenericSubClass[str]):
+    def abstract_method(self, x: str) -> str:
         return "str"
 
 
-class GenericSubClassInt(GenericBaseClass[int]):
-    def abstract_method(self) -> int:
+class GenericSubClassInt(GenericSubClass[int]):
+    def abstract_method(self, x: int) -> int:
         return 10
 
 
@@ -24,5 +29,5 @@ class ClassWithGenericDependency:
     def __init__(self, dependency: GenericBaseClass[str]):
         self.dependency = dependency
 
-    def public_method(self) -> str:
-        return self.dependency.abstract_method()
+    def public_method(self, x: str) -> str:
+        return self.dependency.abstract_method(x)

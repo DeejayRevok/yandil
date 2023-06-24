@@ -1,7 +1,10 @@
+# pytype: disable=module-attr
+import typing
 from abc import ABC
 from collections import defaultdict
 from dataclasses import is_dataclass
 from inspect import Parameter, signature
+from types import GenericAlias
 from typing import (
     Any,
     Dict,
@@ -12,6 +15,7 @@ from typing import (
     Optional,
     Protocol,
     Set,
+    Tuple,
     Type,
     TypeVar,
     Union,
@@ -42,7 +46,7 @@ class Container:
 
     def __init__(self, configuration_container: ConfigurationContainer):
         self.__dependency_map: Dict[Type, Dependency] = {}
-        self.__bases_map: Dict[Type, List[Type]] = defaultdict(list)
+        self.__bases_map: Dict[Type | GenericAlias, List[Type]] = defaultdict(list)
         self.__configuration_container = configuration_container
 
     def add(self, cls: Type, is_primary: Optional[bool] = None) -> None:
@@ -73,22 +77,54 @@ class Container:
         return False
 
     def __update_bases_map(
-        self, cls: Type, children_is_primary: Optional[bool], reference_class: Optional[Type] = None
+        self,
+        cls: Type,
+        children_is_primary: Optional[bool],
+        reference_class: Optional[Type] = None,
+        reference_class_args: Optional[Tuple[Any]] = None,
     ) -> None:
         if reference_class is None:
             reference_class = cls
 
+        orig_classes_args = {}
         if hasattr(reference_class, "__orig_bases__"):
             for base in reference_class.__orig_bases__:
+                base_origin_class = get_origin(base)
+                if self.__should_skip_base(base_origin_class):
+                    continue
+
+                if reference_class_args is not None:
+                    base = self.__get_generic_alias_instance_from_alias(base, alias_args=reference_class_args)
+
                 self.__add_children_to_base(cls, base, children_is_primary)
+                orig_classes_args[base_origin_class] = get_args(base)
 
         for base in reference_class.__bases__:
-            if base in self.__EXCLUDED_BASES or base in self.__ABSTRACT_BASES:
+            if self.__should_skip_base(base):
                 continue
             self.__add_children_to_base(cls, base, children_is_primary)
-            self.__update_bases_map(cls, children_is_primary, reference_class=base)
+            self.__update_bases_map(
+                cls, children_is_primary, reference_class=base, reference_class_args=orig_classes_args.get(base)
+            )
+
+    def __should_skip_base(self, base: Type) -> bool:
+        return base in self.__EXCLUDED_BASES or base in self.__ABSTRACT_BASES
+
+    def __get_generic_alias_instance_from_alias(
+        self, alias: typing._GenericAlias, alias_args: Optional[Tuple[Any]] = None
+    ) -> GenericAlias:
+        if alias_args is None:
+            alias_args = get_args(alias)
+        else:
+            number_of_alias_args = len(get_args(alias))
+            alias_args = alias_args[:number_of_alias_args]
+
+        return GenericAlias(get_origin(alias), alias_args)
 
     def __add_children_to_base(self, cls: Type, base: Type, children_is_primary: Optional[bool]) -> None:
+        if isinstance(base, typing._GenericAlias):
+            base = self.__get_generic_alias_instance_from_alias(base)
+
         if (
             children_is_primary is True
             and base in self.__bases_map
@@ -99,6 +135,9 @@ class Container:
         self.__bases_map[base].append(cls)
 
     def __getitem__(self, cls: Type[DT]) -> Optional[DT]:
+        if isinstance(cls, typing._GenericAlias):
+            cls = self.__get_generic_alias_instance_from_alias(cls)
+
         dependency = self.__dependency_map.get(cls, None)
         if dependency is None and cls in self.__bases_map:
             dependency = self.__get_dependency_from_base(cls)
