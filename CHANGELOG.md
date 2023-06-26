@@ -1,3 +1,9 @@
+## 0.2.2 (2023-06-26)
+
+### Fix
+
+- **DependencyFiller**: allow passing instance args and kwargs to dependency filled classes
+
 ## 0.2.1 (2023-06-26)
 
 ### Fix
