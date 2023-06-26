@@ -1,3 +1,10 @@
+## 0.2.1 (2023-06-26)
+
+### Fix
+
+- **Container**: check if cls is already added as dependency before trying to add it in container add
+- **Container**: avoid setting arguments for already resolved dependencies checking is_resolved instead of arguments
+
 ## 0.2.0 (2023-06-26)
 
 ### Feat
