@@ -53,6 +53,9 @@ class Container:
         if self.__is_abstract_class(cls):
             raise AbstractClassNotAllowedError(cls)
 
+        if cls in self.__dependency_map:
+            return
+
         dependency = Dependency(cls, is_primary=is_primary)
 
         self.__update_bases_map(cls, is_primary)
