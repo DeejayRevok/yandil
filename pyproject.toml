@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "yandil"
-version = "0.1.4"
+version = "0.2.0"
 description = "Yet ANother Dependency Injection Library"
 readme = "README.md"
 authors = ["DeejayRevok <seryi_one@hotmail.com>"]
@@ -34,7 +34,7 @@ line_length = 120
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.1.4"
+version = "0.2.0"
 tag_format = "$version"
 version_files = [
   "pyproject.toml:version"
