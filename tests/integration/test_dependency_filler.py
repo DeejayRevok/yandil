@@ -1,6 +1,10 @@
 from unittest import TestCase
 
-from integration.resources.simple_dependency_classes import SimpleDependencyClientClass, SimpleDependencyDependencyClass
+from integration.resources.simple_dependency_classes import (
+    MixedDependenciesClientClass,
+    SimpleDependencyClientClass,
+    SimpleDependencyDependencyClass,
+)
 
 from yandil.configuration.configuration_container import ConfigurationContainer
 from yandil.container import Container
@@ -24,3 +28,13 @@ class TestDependencyFiller(TestCase):
         client_class_instance = SimpleDependencyClientClass()
         self.assertIsInstance(client_class_instance, SimpleDependencyClientClass)
         self.assertEqual(container_dependency_class_instance, client_class_instance.dependency)
+
+    def test_fill_dependencies_with_fixed_args(self):
+        self.dependency_filler.fill(MixedDependenciesClientClass)
+
+        container_dependency_class_instance = self.container[SimpleDependencyDependencyClass]
+        client_class_instance = MixedDependenciesClientClass("arg", kwarg=20)
+        self.assertIsInstance(client_class_instance, MixedDependenciesClientClass)
+        self.assertEqual(container_dependency_class_instance, client_class_instance.dependency)
+        self.assertEqual("arg", client_class_instance.arg)
+        self.assertEqual(20, client_class_instance.kwarg)
