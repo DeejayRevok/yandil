@@ -187,7 +187,7 @@ class Container:
             return None
 
     def __set_arguments(self, dependency: Dependency) -> None:
-        if len(dependency.arguments) > 0:
+        if dependency.is_resolved:
             return
 
         for argument_name, argument_type in get_type_hints(dependency.cls.__init__).items():

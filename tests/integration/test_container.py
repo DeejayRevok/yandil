@@ -14,6 +14,7 @@ from integration.resources.classes_multilevel_inheritance import (
     DependencyClass,
 )
 from integration.resources.generic_classes import ClassWithGenericDependency, GenericSubClassInt, GenericSubClassStr
+from integration.resources.instance_class import InstanceClass
 from integration.resources.iterable_dependencies_classes import (
     ClassWithIterableDependencies,
     FirstIterableDependencyClass,
@@ -54,12 +55,12 @@ class TestContainer(TestCase):
         self.assertIsInstance(simple_dependency_dependency_class, SimpleDependencyDependencyClass)
 
     def test_add_instance(self):
-        simple_dependency_dependency_class_instance = SimpleDependencyDependencyClass()
+        instance_class_instance = InstanceClass({})
 
-        self.container[SimpleDependencyDependencyClass] = simple_dependency_dependency_class_instance
+        self.container[InstanceClass] = instance_class_instance
 
-        result_simple_dependency_dependency_class = self.container[SimpleDependencyDependencyClass]
-        self.assertEqual(simple_dependency_dependency_class_instance, result_simple_dependency_dependency_class)
+        result_instance_class_instance = self.container[InstanceClass]
+        self.assertEqual(result_instance_class_instance, instance_class_instance)
 
     def test_add_abstract_class(self):
         with self.assertRaises(AbstractClassNotAllowedError) as context:
