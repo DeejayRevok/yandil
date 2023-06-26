@@ -62,6 +62,15 @@ class TestContainer(TestCase):
         result_instance_class_instance = self.container[InstanceClass]
         self.assertEqual(result_instance_class_instance, instance_class_instance)
 
+    def test_add_already_added_instance(self):
+        instance_class_instance = InstanceClass({})
+        self.container[InstanceClass] = instance_class_instance
+
+        self.container.add(InstanceClass)
+
+        result_instance_class_instance = self.container[InstanceClass]
+        self.assertEqual(result_instance_class_instance, instance_class_instance)
+
     def test_add_abstract_class(self):
         with self.assertRaises(AbstractClassNotAllowedError) as context:
             self.container.add(AbstractBaseClass)
