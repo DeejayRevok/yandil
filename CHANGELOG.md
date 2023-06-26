@@ -1,3 +1,9 @@
+## 0.2.0 (2023-06-26)
+
+### Feat
+
+- **SelfDiscoverDependencyLoader**: add parameter to allow passing paths of modules to be force loaded without checking any condition
+
 ## 0.1.4 (2023-06-24)
 
 ### Fix
