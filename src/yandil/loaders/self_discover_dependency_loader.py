@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Iterable, Optional, Set
 
 from yandil.container import Container, default_container
@@ -21,6 +22,7 @@ class SelfDiscoverDependencyLoader:
         excluded_modules: Optional[Set[str]] = None,
         should_exclude_classes_without_public_methods: bool = True,
         should_exclude_dataclasses: bool = True,
+        mandatory_modules: Optional[Set[Path]] = None,
     ):
         if container is None:
             container = default_container
@@ -30,19 +32,43 @@ class SelfDiscoverDependencyLoader:
         self.__should_exclude_dataclasses = should_exclude_dataclasses
         self.__sources_root_path = sources_root_path
         self.__discovery_base_path = discovery_base_path
+        if mandatory_modules is None:
+            mandatory_modules = set()
+        self.__mandatory_modules = mandatory_modules
 
     def load(self) -> None:
         for module_data in discover_modules(self.__discovery_base_path, self.__excluded_modules):
             module_file_path = module_data.module_path + ".py"
-            for class_data in self.__get_classes_discover_iterable(
-                module_file_path,
-                self.__should_exclude_classes_without_public_methods,
-                self.__should_exclude_dataclasses,
-            ):
+
+            if self.__is_module_mandatory(module_data.module_path):
+                module_classes = self.__get_mandatory_module_classes_discover_iterable(module_file_path)
+            else:
+                module_classes = self.__get_non_mandatory_module_classes_discover_iterable(
+                    module_file_path,
+                    self.__should_exclude_classes_without_public_methods,
+                    self.__should_exclude_dataclasses,
+                )
+
+            for class_data in module_classes:
                 cls = class_data.to_class(self.__sources_root_path)
                 self.__container.add(cls)
 
-    def __get_classes_discover_iterable(
+    def __is_module_mandatory(self, module_path: str) -> bool:
+        module_path = Path(module_path)
+        for mandatory_module_path in self.__mandatory_modules:
+            if module_path == mandatory_module_path:
+                return True
+            if mandatory_module_path in module_path.parents:
+                return True
+        return False
+
+    def __get_mandatory_module_classes_discover_iterable(self, module_file_path: str) -> Iterable[ClassData]:
+        return transform_class_nodes_to_class_data(
+            class_nodes=exclude_abstract_classes(discover_classes_from_module(module_file_path)),
+            module_file_path=module_file_path,
+        )
+
+    def __get_non_mandatory_module_classes_discover_iterable(
         self,
         module_file_path: str,
         should_exclude_classes_without_public_methods: bool,
