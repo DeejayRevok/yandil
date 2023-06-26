@@ -1,5 +1,6 @@
 # YANDIL
 [![YANDIL CI](https://github.com/DeejayRevok/yandil/actions/workflows/pythonapp.yml/badge.svg?branch=main)](https://github.com/DeejayRevok/yandil/actions/workflows/pythonapp.yml)
+[![PyPI version](https://badge.fury.io/py/yandil.svg)](https://pypi.org/project/yandil/)
 
 ## What is YANDIL?
 YANDIL(**Yet ANother Dependency Injection Library**) is a python dependency injection library with two main aims:
