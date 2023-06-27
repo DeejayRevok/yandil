@@ -1,3 +1,9 @@
+## 0.2.3 (2023-06-27)
+
+### Fix
+
+- **DependencyFiller**: catch PrimaryDependencyNotFoundError and MissingConfigurationValueError on dependency filling
+
 ## 0.2.2 (2023-06-26)
 
 ### Fix
