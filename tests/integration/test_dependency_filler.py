@@ -1,7 +1,9 @@
 from unittest import TestCase
 
 from integration.resources.simple_dependency_classes import (
+    FirstBaseChildrenDependencyClass,
     MixedDependenciesClientClass,
+    SecondBaseChildrenDependencyClass,
     SimpleDependencyClientClass,
     SimpleDependencyDependencyClass,
 )
@@ -17,6 +19,8 @@ class TestDependencyFiller(TestCase):
             configuration_container=ConfigurationContainer(),
         )
         self.container.add(SimpleDependencyDependencyClass)
+        self.container.add(FirstBaseChildrenDependencyClass)
+        self.container.add(SecondBaseChildrenDependencyClass)
         self.dependency_filler = DependencyFiller(
             container=self.container,
         )
@@ -38,3 +42,4 @@ class TestDependencyFiller(TestCase):
         self.assertEqual(container_dependency_class_instance, client_class_instance.dependency)
         self.assertEqual("arg", client_class_instance.arg)
         self.assertEqual(20, client_class_instance.kwarg)
+        self.assertIsNone(client_class_instance.client_dependency_class)
