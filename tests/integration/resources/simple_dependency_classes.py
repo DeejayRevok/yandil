@@ -15,8 +15,27 @@ class SimpleDependencyClientClass:
         self.dependency = dependency
 
 
+class BaseClientDependencyClass:
+    pass
+
+
+class FirstBaseChildrenDependencyClass(BaseClientDependencyClass):
+    pass
+
+
+class SecondBaseChildrenDependencyClass(BaseClientDependencyClass):
+    pass
+
+
 class MixedDependenciesClientClass:
-    def __init__(self, arg: str, kwarg: int = 10, dependency: Optional[SimpleDependencyDependencyClass] = None):
+    def __init__(
+        self,
+        arg: str,
+        kwarg: int = 10,
+        client_dependency_class: Optional[BaseClientDependencyClass] = None,
+        dependency: Optional[SimpleDependencyDependencyClass] = None,
+    ):
         self.arg = arg
+        self.client_dependency_class = client_dependency_class
         self.kwarg = kwarg
         self.dependency = dependency
