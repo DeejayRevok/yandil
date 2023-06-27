@@ -4,6 +4,7 @@ version = "0.2.2"
 description = "Yet ANother Dependency Injection Library"
 readme = "README.md"
 authors = ["DeejayRevok <seryi_one@hotmail.com>"]
+license = "BSD-3-Clause"
 
 [tool.poetry.dependencies]
 python = "~=3.10.0"
