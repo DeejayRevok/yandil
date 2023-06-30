@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from importlib import import_module
 from os import path
 from os.path import relpath, splitext
-from typing import Iterable, Set, Type
+from typing import Iterable, Optional, Set, Type
 
 
 @dataclass(frozen=True)
@@ -52,17 +52,29 @@ def transform_class_nodes_to_class_data(class_nodes: Iterable[ClassDef], module_
         )
 
 
-def exclude_classes_without_public_methods(class_nodes: Iterable[ClassDef]) -> Iterable[ClassDef]:
+def exclude_classes_without_public_methods(
+    class_nodes: Iterable[ClassDef],
+    classes_without_defined_public_methods: Optional[Set[ClassDef]] = None,
+) -> Iterable[ClassDef]:
     for class_node in class_nodes:
         if class_defines_public_methods(class_node):
             yield class_node
+        elif classes_without_defined_public_methods is not None:
+            classes_without_defined_public_methods.add(class_node)
 
 
 def class_defines_public_methods(class_node: ClassDef) -> bool:
     for node in class_node.body:
-        if not isinstance(node, FunctionDef) or node.name.startswith("_"):
+        if not isinstance(node, FunctionDef) or node.name.startswith("_") or is_class_method(node):
             continue
         return True
+    return False
+
+
+def is_class_method(node: FunctionDef) -> bool:
+    for decorator_node in node.decorator_list:
+        if isinstance(decorator_node, Name) and decorator_node.id == "classmethod":
+            return True
     return False
 
 

@@ -17,7 +17,7 @@ class TestModuleDiscovery(TestCase):
             "another_class_with_public_methods",
             "class_dataclass",
             "dependency_class",
-            "class_without_public_methods",
+            "classes_without_defined_public_methods",
             "declarative_dependency_class",
             "abstract_classes",
         ]
@@ -34,7 +34,7 @@ class TestModuleDiscovery(TestCase):
             "another_class_with_public_methods",
             "class_dataclass",
             "dependency_class",
-            "class_without_public_methods",
+            "classes_without_defined_public_methods",
             "declarative_dependency_class",
             "abstract_classes",
         ]
