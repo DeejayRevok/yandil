@@ -1,3 +1,9 @@
+## 0.2.4 (2023-06-30)
+
+### Fix
+
+- when filtering classes without public methods take into account also public methods inherited from parent class
+
 ## 0.2.3 (2023-06-27)
 
 ### Fix
