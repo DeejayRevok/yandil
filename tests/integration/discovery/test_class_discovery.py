@@ -1,4 +1,4 @@
-from _ast import FunctionDef
+from ast import FunctionDef
 from os.path import dirname, join
 from unittest import TestCase
 
