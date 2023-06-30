@@ -5,6 +5,9 @@ description = "Yet ANother Dependency Injection Library"
 readme = "README.md"
 authors = ["DeejayRevok <seryi_one@hotmail.com>"]
 license = "BSD-3-Clause"
+repository = "https://github.com/DeejayRevok/yandil"
+homepage = "https://github.com/DeejayRevok/yandil"
+keywords = ["dependency injection", "di"]
 
 [tool.poetry.dependencies]
 python = "~=3.10.0"
