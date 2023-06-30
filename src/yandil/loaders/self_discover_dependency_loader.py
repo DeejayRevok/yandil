@@ -42,7 +42,7 @@ class SelfDiscoverDependencyLoader:
         for module_data in discover_modules(self.__discovery_base_path, self.__excluded_modules):
             module_file_path = module_data.module_path + ".py"
 
-            classes_without_defined_public_methods = set()
+            classes_without_defined_public_methods: Set[ClassDef] = set()
             if self.__is_module_mandatory(module_data.module_path):
                 module_classes = self.__get_mandatory_module_classes_discover_iterable(module_file_path)
             else:
@@ -82,7 +82,7 @@ class SelfDiscoverDependencyLoader:
         module_file_path: str,
         should_exclude_classes_without_public_methods: bool,
         should_exclude_dataclasses: bool,
-        classes_without_defined_public_methods: Set[str] = None,
+        classes_without_defined_public_methods: Set[ClassDef],
     ) -> Iterable[ClassData]:
         iterable = exclude_abstract_classes(discover_classes_from_module(module_file_path))
         if should_exclude_classes_without_public_methods:
