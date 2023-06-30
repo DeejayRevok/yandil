@@ -1,3 +1,4 @@
+from ast import FunctionDef
 from os.path import dirname, join
 from unittest import TestCase
 
@@ -9,6 +10,7 @@ from yandil.discovery.class_discovery import (
     exclude_classes_without_decorators,
     exclude_classes_without_public_methods,
     exclude_dataclasses,
+    is_class_method,
     transform_class_nodes_to_class_data,
 )
 
@@ -37,7 +39,7 @@ class TestClassDiscovery(TestCase):
         self.assertEqual(module_file_path, class_data.module_file_path)
 
     def test_exclude_classes_without_public_methods(self):
-        module_file_path = join(self.__DISCOVERY_BASE_PATH, "class_without_public_methods.py")
+        module_file_path = join(self.__DISCOVERY_BASE_PATH, "classes_without_defined_public_methods.py")
         discovered_classes = discover_classes_from_module(module_file_path)
 
         class_excluding_ones_without_public_methods = list(exclude_classes_without_public_methods(discovered_classes))
@@ -46,7 +48,7 @@ class TestClassDiscovery(TestCase):
 
     def test_class_defines_public_methods(self):
         class_without_public_methods_module_file_path = join(
-            self.__DISCOVERY_BASE_PATH, "class_without_public_methods.py"
+            self.__DISCOVERY_BASE_PATH, "classes_without_defined_public_methods.py"
         )
         class_with_public_methods_module_file_path = join(
             self.__DISCOVERY_BASE_PATH, "first_module", "class_with_public_methods.py"
@@ -115,3 +117,27 @@ class TestClassDiscovery(TestCase):
         classes_excluding_abstract_classes = list(exclude_abstract_classes(discovered_classes))
 
         self.assertEqual(0, len(classes_excluding_abstract_classes))
+
+    def test_is_class_method(self):
+        module_file_path = join(self.__DISCOVERY_BASE_PATH, "classes_without_defined_public_methods.py")
+        class_without_defined_public_methods = next(
+            filter(
+                lambda x: x.name == "ClassWithoutDefinedPublicMethods", discover_classes_from_module(module_file_path)
+            )
+        )
+        scenarios = [
+            {"message": "Class method", "method_name": "public_class_method", "expected_result": True},
+            {"message": "Instance method", "method_name": "_protected_method", "expected_result": False},
+        ]
+        for scenario in scenarios:
+            with self.subTest(scenario["message"]):
+                method_to_test = next(
+                    filter(
+                        lambda x: isinstance(x, FunctionDef) and x.name == scenario["method_name"],
+                        class_without_defined_public_methods.body,
+                    )
+                )
+
+                result = is_class_method(method_to_test)
+
+                self.assertEqual(scenario["expected_result"], result)

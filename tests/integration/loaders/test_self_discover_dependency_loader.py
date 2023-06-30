@@ -3,8 +3,9 @@ from pathlib import Path
 from unittest import TestCase
 
 from integration.resources.dependency_discovery_tests_module.class_dataclass import ClassDataclass
-from integration.resources.dependency_discovery_tests_module.class_without_public_methods import (
-    ClassWithoutPublicMethods,
+from integration.resources.dependency_discovery_tests_module.classes_without_defined_public_methods import (
+    ClassWithoutDefinedPublicMethods,
+    DependencyClassChildrenWithoutDefinedPublicMethods,
 )
 from integration.resources.dependency_discovery_tests_module.declarative_dependency_class import (
     DeclarativeDependencyClass,
@@ -47,8 +48,8 @@ class TestSelfDiscoverDependencyLoader(TestCase):
         self.assertIsInstance(dependency_class_instance, DependencyClass)
         declarative_dependency_class_instance = self.container[DeclarativeDependencyClass]
         self.assertIsInstance(declarative_dependency_class_instance, DeclarativeDependencyClass)
-        class_without_public_methods_instance = self.container[ClassWithoutPublicMethods]
-        self.assertIsInstance(class_without_public_methods_instance, ClassWithoutPublicMethods)
+        class_without_public_methods_instance = self.container[ClassWithoutDefinedPublicMethods]
+        self.assertIsInstance(class_without_public_methods_instance, ClassWithoutDefinedPublicMethods)
         self.assertEqual(dependency_class_instance, class_without_public_methods_instance.dependency)
         class_dataclass_instance = self.container[ClassDataclass]
         self.assertIsInstance(class_dataclass_instance, ClassDataclass)
@@ -74,8 +75,8 @@ class TestSelfDiscoverDependencyLoader(TestCase):
         self.assertIsInstance(dependency_class_instance, DependencyClass)
         declarative_dependency_class_instance = self.container[DeclarativeDependencyClass]
         self.assertIsInstance(declarative_dependency_class_instance, DeclarativeDependencyClass)
-        class_without_public_methods_instance = self.container[ClassWithoutPublicMethods]
-        self.assertIsInstance(class_without_public_methods_instance, ClassWithoutPublicMethods)
+        class_without_public_methods_instance = self.container[ClassWithoutDefinedPublicMethods]
+        self.assertIsInstance(class_without_public_methods_instance, ClassWithoutDefinedPublicMethods)
         self.assertEqual(dependency_class_instance, class_without_public_methods_instance.dependency)
         class_dataclass_instance = self.container[ClassDataclass]
         self.assertIsInstance(class_dataclass_instance, ClassDataclass)
@@ -109,9 +110,16 @@ class TestSelfDiscoverDependencyLoader(TestCase):
         self.assertEqual(dependency_class_instance, class_with_public_methods_instance.dependency)
         another_class_with_public_methods_instance = self.container[AnotherClassWithPublicMethods]
         self.assertIsInstance(another_class_with_public_methods_instance, AnotherClassWithPublicMethods)
+        dependency_class_children_without_defined_public_methods_instance = self.container[
+            DependencyClassChildrenWithoutDefinedPublicMethods
+        ]
+        self.assertIsInstance(
+            dependency_class_children_without_defined_public_methods_instance,
+            DependencyClassChildrenWithoutDefinedPublicMethods,
+        )
         with self.assertRaises(DependencyNotFoundError) as context:
-            _ = self.container[ClassWithoutPublicMethods]
-        self.assertEqual(ClassWithoutPublicMethods, context.exception.dependency_type)
+            _ = self.container[ClassWithoutDefinedPublicMethods]
+        self.assertEqual(ClassWithoutDefinedPublicMethods, context.exception.dependency_type)
 
     def test_load_dependencies_with_excluded_dataclasses(self):
         loader = SelfDiscoverDependencyLoader(
@@ -129,8 +137,8 @@ class TestSelfDiscoverDependencyLoader(TestCase):
         self.assertIsInstance(dependency_class_instance, DependencyClass)
         declarative_dependency_class_instance = self.container[DeclarativeDependencyClass]
         self.assertIsInstance(declarative_dependency_class_instance, DeclarativeDependencyClass)
-        class_without_public_methods_instance = self.container[ClassWithoutPublicMethods]
-        self.assertIsInstance(class_without_public_methods_instance, ClassWithoutPublicMethods)
+        class_without_public_methods_instance = self.container[ClassWithoutDefinedPublicMethods]
+        self.assertIsInstance(class_without_public_methods_instance, ClassWithoutDefinedPublicMethods)
         self.assertEqual(dependency_class_instance, class_without_public_methods_instance.dependency)
         class_with_public_methods_instance = self.container[ClassWithPublicMethods]
         self.assertIsInstance(class_with_public_methods_instance, ClassWithPublicMethods)
@@ -142,7 +150,9 @@ class TestSelfDiscoverDependencyLoader(TestCase):
         self.assertEqual(ClassDataclass, context.exception.dependency_type)
 
     def test_load_dependencies_with_mandatory_modules(self):
-        class_without_public_methods_module = Path(join(self.__DISCOVERY_BASE_PATH, "class_without_public_methods"))
+        class_without_public_methods_module = Path(
+            join(self.__DISCOVERY_BASE_PATH, "classes_without_defined_public_methods")
+        )
         loader = SelfDiscoverDependencyLoader(
             discovery_base_path=self.__DISCOVERY_BASE_PATH,
             sources_root_path=self.__SOURCES_ROOT_PATH,
@@ -166,6 +176,6 @@ class TestSelfDiscoverDependencyLoader(TestCase):
         self.assertEqual(dependency_class_instance, class_with_public_methods_instance.dependency)
         another_class_with_public_methods_instance = self.container[AnotherClassWithPublicMethods]
         self.assertIsInstance(another_class_with_public_methods_instance, AnotherClassWithPublicMethods)
-        class_without_public_methods_instance = self.container[ClassWithoutPublicMethods]
-        self.assertIsInstance(class_without_public_methods_instance, ClassWithoutPublicMethods)
+        class_without_public_methods_instance = self.container[ClassWithoutDefinedPublicMethods]
+        self.assertIsInstance(class_without_public_methods_instance, ClassWithoutDefinedPublicMethods)
         self.assertEqual(dependency_class_instance, class_without_public_methods_instance.dependency)
