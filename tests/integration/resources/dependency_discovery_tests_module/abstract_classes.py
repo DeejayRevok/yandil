@@ -8,6 +8,6 @@ class AbstractClass(ABC):
         pass
 
 
-class GenericAbstractClass(Protocol):
+class ProtocolAbstractClass(Protocol):
     def public_abstract_method(self):
         ...
