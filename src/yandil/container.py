@@ -40,8 +40,8 @@ DT = TypeVar("DT")
 
 
 class Container:
-    __EXCLUDED_BASES: Final[Set[str]] = {object}
-    __ABSTRACT_BASES: Final[Set[str]] = {Protocol, Generic, ABC}
+    __EXCLUDED_BASES: Final[Set[str]] = {object, Generic}
+    __ABSTRACT_BASES: Final[Set[str]] = {Protocol, ABC}
     __BUILTIN_TYPES: Final[Set[str]] = {int, float, str, bool, bytes, bytearray}
 
     def __init__(self, configuration_container: ConfigurationContainer):

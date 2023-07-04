@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Generic, TypeVar
+from typing import Protocol
 
 
 class AbstractClass(ABC):
@@ -8,10 +8,6 @@ class AbstractClass(ABC):
         pass
 
 
-T = TypeVar("T")
-
-
-class GenericAbstractClass(Generic[T]):
-    @abstractmethod
+class GenericAbstractClass(Protocol):
     def public_abstract_method(self):
-        pass
+        ...
