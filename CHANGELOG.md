@@ -1,3 +1,37 @@
+## 0.3.0 (2023-07-04)
+
+### Feat
+
+- **SelfDiscoverDependencyLoader**: add parameter to allow passing paths of modules to be force loaded without checking any condition
+- add dependency filler
+- add declarative dependencies loader
+- add self discover dependency loader
+- add class discovery functions
+- add module discovery functions
+- add declarative dependency decorator
+- add dependencies container
+- add configuration container
+- add dependency class
+
+### Fix
+
+- remove generic from the list of abstract bases
+- when filtering classes without public methods take into account also public methods inherited from parent class
+- **DependencyFiller**: catch PrimaryDependencyNotFoundError and MissingConfigurationValueError on dependency filling
+- **DependencyFiller**: allow passing instance args and kwargs to dependency filled classes
+- **Container**: check if cls is already added as dependency before trying to add it in container add
+- **Container**: avoid setting arguments for already resolved dependencies checking is_resolved instead of arguments
+- **Container**: propagate generic alias arguments to parent classes
+- **Container**: add also the definitions to bases map and update the bases map recursively
+- check class subscriptions for checking abstract classes on discovery
+- exclude abstract classes from self discover
+
+### Refactor
+
+- **Container**: refactor the way container set instance adds classes to parents
+- **pyproject.toml**: rename poetry project to yandil
+- rename all ocurrences to yandil
+
 ## 0.2.4 (2023-06-30)
 
 ### Fix
