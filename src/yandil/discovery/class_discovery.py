@@ -28,7 +28,7 @@ def discover_classes_from_module(module_file_path: str) -> Iterable[ClassDef]:
 
 
 def exclude_abstract_classes(class_nodes: Iterable[ClassDef]) -> Iterable[ClassDef]:
-    abstract_bases = {"Protocol", "Generic", "ABC"}
+    abstract_bases = {"Protocol", "ABC"}
 
     def __is_abstract_class_node(node: ClassDef) -> bool:
         for base in node.bases:
