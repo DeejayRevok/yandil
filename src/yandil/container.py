@@ -30,6 +30,7 @@ from yandil.dependency import Dependency
 from yandil.errors.abstract_class_not_allowed_error import AbstractClassNotAllowedError
 from yandil.errors.configuration_value_type_mismatch_error import ConfigurationValueTypeMismatchError
 from yandil.errors.dependency_not_found_error import DependencyNotFoundError
+from yandil.errors.instance_and_class_does_not_match_error import InstanceAndClassDoesNotMatchError
 from yandil.errors.missing_configuration_value_error import MissingConfigurationValueError
 from yandil.errors.missing_type_hint_item_type_error import MissingTypeHintItemTypeError
 from yandil.errors.primary_dependency_already_defined_error import PrimaryDependencyAlreadyDefinedError
@@ -61,23 +62,25 @@ class Container:
         self.__update_bases_map(cls, is_primary)
         self.__dependency_map[cls] = dependency
 
-    def __setitem__(self, cls: Type[DT], value: DT) -> None:
-        if self.__is_abstract_class(cls):
-            cls = value.__class__
-            is_primary = True
-            dependency = Dependency(cls, value=value, is_resolved=True, is_primary=True)
-        else:
-            is_primary = None
-            dependency = Dependency(cls, value=value, is_resolved=True)
-
-        self.__update_bases_map(cls, is_primary)
-        self.__dependency_map[cls] = dependency
-
     def __is_abstract_class(self, cls: Type) -> bool:
         for base in cls.__bases__:
             if base in self.__ABSTRACT_BASES:
                 return True
         return False
+
+    def __setitem__(self, cls: Type[DT], value: DT) -> None:
+        if cls == value.__class__:
+            is_primary = None
+            dependency = Dependency(cls, value=value, is_resolved=True)
+        elif isinstance(value, cls):
+            is_primary = self.__get_primary_dependency_from_base_children(self.__bases_map.get(cls, [])) is None
+            cls = value.__class__
+            dependency = Dependency(cls, value=value, is_resolved=True, is_primary=is_primary)
+        else:
+            raise InstanceAndClassDoesNotMatchError(value, cls)
+
+        self.__update_bases_map(cls, is_primary)
+        self.__dependency_map[cls] = dependency
 
     def __update_bases_map(
         self,

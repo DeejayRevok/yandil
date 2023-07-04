@@ -39,6 +39,7 @@ from yandil.configuration.environment import Environment
 from yandil.container import Container
 from yandil.errors.abstract_class_not_allowed_error import AbstractClassNotAllowedError
 from yandil.errors.dependency_not_found_error import DependencyNotFoundError
+from yandil.errors.instance_and_class_does_not_match_error import InstanceAndClassDoesNotMatchError
 from yandil.errors.missing_configuration_value_error import MissingConfigurationValueError
 from yandil.errors.primary_dependency_already_defined_error import PrimaryDependencyAlreadyDefinedError
 
@@ -87,6 +88,13 @@ class TestContainer(TestCase):
         self.assertEqual(abstract_class_instance, result_abstract_class_instance)
         abstract_class_second_children_instance = self.container[AbstractBaseClassSecondChildren]
         self.assertIsInstance(abstract_class_second_children_instance, AbstractBaseClassSecondChildren)
+
+    def test_add_instance_does_not_match_with_class(self):
+        with self.assertRaises(InstanceAndClassDoesNotMatchError) as context:
+            self.container[str] = 10
+
+        self.assertEqual(10, context.exception.instance)
+        self.assertEqual(str, context.exception.cls)
 
     def test_add_multiple_primaries(self):
         self.container.add(PrimaryDependencyFirstChildren, is_primary=True)
