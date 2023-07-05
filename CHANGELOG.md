@@ -1,3 +1,10 @@
+## 0.3.1 (2023-07-05)
+
+### Fix
+
+- **Container**: check if class has already been added to the base map before trying to add it
+- **Container**: reorder the execution of dependency map update and update bases map
+
 ## 0.3.0 (2023-07-04)
 
 ### Fix
