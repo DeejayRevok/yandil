@@ -128,6 +128,9 @@ class Container:
         return GenericAlias(get_origin(alias), alias_args)
 
     def __add_children_to_base(self, cls: Type, base: Type, children_is_primary: Optional[bool]) -> None:
+        if cls in self.__bases_map[base]:
+            return
+
         if isinstance(base, typing._GenericAlias):
             base = self.__get_generic_alias_instance_from_alias(base)
 
