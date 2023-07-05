@@ -137,7 +137,7 @@ class Container:
         if (
             children_is_primary is True
             and base in self.__bases_map
-            and self.__get_primary_dependency_from_base_children(self.__bases_map[base])
+            and self.__dependency_map[cls] != self.__get_primary_dependency_from_base_children(self.__bases_map[base])
         ):
             raise PrimaryDependencyAlreadyDefinedError(base)
 
