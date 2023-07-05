@@ -137,11 +137,17 @@ class Container:
         if (
             children_is_primary is True
             and base in self.__bases_map
-            and self.__dependency_map[cls] != self.__get_primary_dependency_from_base_children(self.__bases_map[base])
+            and self.__is_primary_already_defined_for_base(cls, base)
         ):
             raise PrimaryDependencyAlreadyDefinedError(base)
 
         self.__bases_map[base].append(cls)
+
+    def __is_primary_already_defined_for_base(self, cls: Type, base: Type | GenericAlias) -> bool:
+        primary_dependency = self.__get_primary_dependency_from_base_children(self.__bases_map[base])
+        if primary_dependency is None:
+            return False
+        return primary_dependency != self.__dependency_map[cls]
 
     def __getitem__(self, cls: Type[DT]) -> Optional[DT]:
         if isinstance(cls, typing._GenericAlias):
