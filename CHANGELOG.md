@@ -1,3 +1,13 @@
+## 0.3.2 (2023-07-05)
+
+### Fix
+
+- **Container**: when adding class to base map check if the already existing primary is the same as the one to add
+
+### Refactor
+
+- **Container**: refactor new check in order to make it more readable
+
 ## 0.3.1 (2023-07-05)
 
 ### Fix
