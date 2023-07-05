@@ -59,8 +59,8 @@ class Container:
 
         dependency = Dependency(cls, is_primary=is_primary)
 
-        self.__update_bases_map(cls, is_primary)
         self.__dependency_map[cls] = dependency
+        self.__update_bases_map(cls, is_primary)
 
     def __is_abstract_class(self, cls: Type) -> bool:
         for base in cls.__bases__:
@@ -79,8 +79,8 @@ class Container:
         else:
             raise InstanceAndClassDoesNotMatchError(value, cls)
 
-        self.__update_bases_map(cls, is_primary)
         self.__dependency_map[cls] = dependency
+        self.__update_bases_map(cls, is_primary)
 
     def __update_bases_map(
         self,
