@@ -108,7 +108,8 @@ class Container:
         for base in reference_class.__bases__:
             if self.__should_skip_base(base):
                 continue
-            self.__add_children_to_base(cls, base, children_is_primary)
+            if base not in orig_classes_args:
+                self.__add_children_to_base(cls, base, children_is_primary)
             self.__update_bases_map(
                 cls, children_is_primary, reference_class=base, reference_class_args=orig_classes_args.get(base)
             )
