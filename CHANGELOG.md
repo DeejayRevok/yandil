@@ -1,3 +1,9 @@
+## 0.3.3 (2023-07-06)
+
+### Fix
+
+- **Container**: avoid adding to the base map of a base which has already been added to its correspondant generic alias base
+
 ## 0.3.2 (2023-07-05)
 
 ### Fix
