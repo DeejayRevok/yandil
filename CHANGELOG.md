@@ -1,3 +1,10 @@
+## 0.4.0 (2023-07-22)
+
+### Feat
+
+- exclude enums from class discovery
+- add option to exclude exceptions from class discovery
+
 ## 0.3.3 (2023-07-06)
 
 ### Fix
