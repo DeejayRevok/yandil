@@ -77,6 +77,7 @@ In order to tune the dependency injection discovery process the loader has the f
 - **should_exclude_classes_without_public_methods**: If set to True, classes which not define any public method will be excluded from the dependency injection discovery process. For example for excluding DTO classes.
 - **should_exclude_dataclasses**: If set to True, dataclasses will be excluded from the dependency injection discovery process.
 - **mandatory_modules**: Set of module paths which classes contained should be loaded as dependencies without checking if they meet any condition.
+- **should_exclude_exceptions**: If set to True, exceptions will be excluded from the dependency injection discovery process.
 
 ### Declarative way
 In this way you will need to decorate the classes which you want to be loaded as dependencies.

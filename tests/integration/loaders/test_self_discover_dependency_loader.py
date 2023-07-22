@@ -11,6 +11,7 @@ from integration.resources.dependency_discovery_tests_module.declarative_depende
     DeclarativeDependencyClass,
 )
 from integration.resources.dependency_discovery_tests_module.dependency_class import DependencyClass
+from integration.resources.dependency_discovery_tests_module.exception_classes import BaseExceptionClass, ExceptionClass
 from integration.resources.dependency_discovery_tests_module.first_module.class_with_public_methods import (
     ClassWithPublicMethods,
 )
@@ -40,6 +41,7 @@ class TestSelfDiscoverDependencyLoader(TestCase):
             should_exclude_classes_without_public_methods=False,
             should_exclude_dataclasses=False,
             container=self.container,
+            should_exclude_exceptions=False,
         )
 
         loader.load()
@@ -58,6 +60,10 @@ class TestSelfDiscoverDependencyLoader(TestCase):
         self.assertEqual(dependency_class_instance, class_with_public_methods_instance.dependency)
         another_class_with_public_methods_instance = self.container[AnotherClassWithPublicMethods]
         self.assertIsInstance(another_class_with_public_methods_instance, AnotherClassWithPublicMethods)
+        base_exception_class_instance = self.container[BaseExceptionClass]
+        self.assertIsInstance(base_exception_class_instance, BaseExceptionClass)
+        exception_class_instance = self.container[ExceptionClass]
+        self.assertIsInstance(exception_class_instance, ExceptionClass)
 
     def test_load_dependencies_with_excluded_modules(self):
         loader = SelfDiscoverDependencyLoader(
@@ -179,3 +185,37 @@ class TestSelfDiscoverDependencyLoader(TestCase):
         class_without_public_methods_instance = self.container[ClassWithoutDefinedPublicMethods]
         self.assertIsInstance(class_without_public_methods_instance, ClassWithoutDefinedPublicMethods)
         self.assertEqual(dependency_class_instance, class_without_public_methods_instance.dependency)
+
+    def test_load_dependencies_excluding_exceptions(self):
+        loader = SelfDiscoverDependencyLoader(
+            discovery_base_path=self.__DISCOVERY_BASE_PATH,
+            sources_root_path=self.__SOURCES_ROOT_PATH,
+            excluded_modules=None,
+            should_exclude_classes_without_public_methods=False,
+            should_exclude_dataclasses=False,
+            container=self.container,
+            should_exclude_exceptions=True,
+        )
+
+        loader.load()
+
+        dependency_class_instance = self.container[DependencyClass]
+        self.assertIsInstance(dependency_class_instance, DependencyClass)
+        declarative_dependency_class_instance = self.container[DeclarativeDependencyClass]
+        self.assertIsInstance(declarative_dependency_class_instance, DeclarativeDependencyClass)
+        class_without_public_methods_instance = self.container[ClassWithoutDefinedPublicMethods]
+        self.assertIsInstance(class_without_public_methods_instance, ClassWithoutDefinedPublicMethods)
+        self.assertEqual(dependency_class_instance, class_without_public_methods_instance.dependency)
+        class_dataclass_instance = self.container[ClassDataclass]
+        self.assertIsInstance(class_dataclass_instance, ClassDataclass)
+        class_with_public_methods_instance = self.container[ClassWithPublicMethods]
+        self.assertIsInstance(class_with_public_methods_instance, ClassWithPublicMethods)
+        self.assertEqual(dependency_class_instance, class_with_public_methods_instance.dependency)
+        another_class_with_public_methods_instance = self.container[AnotherClassWithPublicMethods]
+        self.assertIsInstance(another_class_with_public_methods_instance, AnotherClassWithPublicMethods)
+        with self.assertRaises(DependencyNotFoundError) as context:
+            _ = self.container[BaseExceptionClass]
+        self.assertEqual(BaseExceptionClass, context.exception.dependency_type)
+        with self.assertRaises(DependencyNotFoundError) as context:
+            _ = self.container[ExceptionClass]
+        self.assertEqual(ExceptionClass, context.exception.dependency_type)
