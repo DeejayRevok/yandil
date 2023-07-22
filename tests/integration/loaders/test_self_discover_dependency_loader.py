@@ -11,6 +11,7 @@ from integration.resources.dependency_discovery_tests_module.declarative_depende
     DeclarativeDependencyClass,
 )
 from integration.resources.dependency_discovery_tests_module.dependency_class import DependencyClass
+from integration.resources.dependency_discovery_tests_module.enum_classes import EnumClass
 from integration.resources.dependency_discovery_tests_module.exception_classes import BaseExceptionClass, ExceptionClass
 from integration.resources.dependency_discovery_tests_module.first_module.class_with_public_methods import (
     ClassWithPublicMethods,
@@ -64,6 +65,9 @@ class TestSelfDiscoverDependencyLoader(TestCase):
         self.assertIsInstance(base_exception_class_instance, BaseExceptionClass)
         exception_class_instance = self.container[ExceptionClass]
         self.assertIsInstance(exception_class_instance, ExceptionClass)
+        with self.assertRaises(DependencyNotFoundError) as context:
+            _ = self.container[EnumClass]
+        self.assertEqual(EnumClass, context.exception.dependency_type)
 
     def test_load_dependencies_with_excluded_modules(self):
         loader = SelfDiscoverDependencyLoader(
@@ -92,6 +96,9 @@ class TestSelfDiscoverDependencyLoader(TestCase):
         with self.assertRaises(DependencyNotFoundError) as context:
             _ = self.container[AnotherClassWithPublicMethods]
         self.assertEqual(AnotherClassWithPublicMethods, context.exception.dependency_type)
+        with self.assertRaises(DependencyNotFoundError) as context:
+            _ = self.container[EnumClass]
+        self.assertEqual(EnumClass, context.exception.dependency_type)
 
     def test_load_dependencies_with_excluded_classes_without_public_methods(self):
         loader = SelfDiscoverDependencyLoader(
@@ -126,6 +133,9 @@ class TestSelfDiscoverDependencyLoader(TestCase):
         with self.assertRaises(DependencyNotFoundError) as context:
             _ = self.container[ClassWithoutDefinedPublicMethods]
         self.assertEqual(ClassWithoutDefinedPublicMethods, context.exception.dependency_type)
+        with self.assertRaises(DependencyNotFoundError) as context:
+            _ = self.container[EnumClass]
+        self.assertEqual(EnumClass, context.exception.dependency_type)
 
     def test_load_dependencies_with_excluded_dataclasses(self):
         loader = SelfDiscoverDependencyLoader(
@@ -154,6 +164,9 @@ class TestSelfDiscoverDependencyLoader(TestCase):
         with self.assertRaises(DependencyNotFoundError) as context:
             _ = self.container[ClassDataclass]
         self.assertEqual(ClassDataclass, context.exception.dependency_type)
+        with self.assertRaises(DependencyNotFoundError) as context:
+            _ = self.container[EnumClass]
+        self.assertEqual(EnumClass, context.exception.dependency_type)
 
     def test_load_dependencies_with_mandatory_modules(self):
         class_without_public_methods_module = Path(
@@ -185,6 +198,9 @@ class TestSelfDiscoverDependencyLoader(TestCase):
         class_without_public_methods_instance = self.container[ClassWithoutDefinedPublicMethods]
         self.assertIsInstance(class_without_public_methods_instance, ClassWithoutDefinedPublicMethods)
         self.assertEqual(dependency_class_instance, class_without_public_methods_instance.dependency)
+        with self.assertRaises(DependencyNotFoundError) as context:
+            _ = self.container[EnumClass]
+        self.assertEqual(EnumClass, context.exception.dependency_type)
 
     def test_load_dependencies_excluding_exceptions(self):
         loader = SelfDiscoverDependencyLoader(
@@ -219,3 +235,6 @@ class TestSelfDiscoverDependencyLoader(TestCase):
         with self.assertRaises(DependencyNotFoundError) as context:
             _ = self.container[ExceptionClass]
         self.assertEqual(ExceptionClass, context.exception.dependency_type)
+        with self.assertRaises(DependencyNotFoundError) as context:
+            _ = self.container[EnumClass]
+        self.assertEqual(EnumClass, context.exception.dependency_type)

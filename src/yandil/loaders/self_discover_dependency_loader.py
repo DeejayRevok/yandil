@@ -11,7 +11,7 @@ from yandil.discovery.class_discovery import (
     exclude_dataclasses,
     transform_class_nodes_to_class_data,
 )
-from yandil.discovery.class_feature_checks import has_public_methods, is_exception
+from yandil.discovery.class_feature_checks import has_public_methods, is_enum, is_exception
 from yandil.discovery.module_discovery import discover_modules
 
 
@@ -113,6 +113,8 @@ class SelfDiscoverDependencyLoader:
                 self.__container.add(class_without_defined_public_methods)
 
     def __class_should_be_added(self, cls: Type) -> bool:
+        if is_enum(cls):
+            return False
         if self.__should_exclude_exceptions and is_exception(cls):
             return False
         return True
