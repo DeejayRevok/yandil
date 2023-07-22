@@ -1,5 +1,4 @@
 from ast import ClassDef
-from inspect import getmembers, isfunction
 from pathlib import Path
 from typing import Iterable, Optional, Set, Type
 
@@ -12,6 +11,7 @@ from yandil.discovery.class_discovery import (
     exclude_dataclasses,
     transform_class_nodes_to_class_data,
 )
+from yandil.discovery.class_feature_checks import has_public_methods, is_exception
 from yandil.discovery.module_discovery import discover_modules
 
 
@@ -25,6 +25,7 @@ class SelfDiscoverDependencyLoader:
         should_exclude_classes_without_public_methods: bool = True,
         should_exclude_dataclasses: bool = True,
         mandatory_modules: Optional[Set[Path]] = None,
+        should_exclude_exceptions: bool = True,
     ):
         if container is None:
             container = default_container
@@ -37,6 +38,7 @@ class SelfDiscoverDependencyLoader:
         if mandatory_modules is None:
             mandatory_modules = set()
         self.__mandatory_modules = mandatory_modules
+        self.__should_exclude_exceptions = should_exclude_exceptions
 
     def load(self) -> None:
         for module_data in discover_modules(self.__discovery_base_path, self.__excluded_modules):
@@ -55,6 +57,8 @@ class SelfDiscoverDependencyLoader:
 
             for class_data in module_classes:
                 cls = class_data.to_class(self.__sources_root_path)
+                if not self.__class_should_be_added(cls):
+                    continue
                 self.__container.add(cls)
 
             self.__add_classes_without_defined_public_methods_with_public_methods(
@@ -103,8 +107,12 @@ class SelfDiscoverDependencyLoader:
             class_without_defined_public_methods = class_without_defined_public_methods.to_class(
                 self.__sources_root_path
             )
-            if self.__class_has_public_methods(class_without_defined_public_methods):
+            if has_public_methods(class_without_defined_public_methods) and self.__class_should_be_added(
+                class_without_defined_public_methods
+            ):
                 self.__container.add(class_without_defined_public_methods)
 
-    def __class_has_public_methods(self, cls: Type) -> bool:
-        return any(name for name, member in getmembers(cls) if isfunction(member) and not name.startswith("_"))
+    def __class_should_be_added(self, cls: Type) -> bool:
+        if self.__should_exclude_exceptions and is_exception(cls):
+            return False
+        return True
